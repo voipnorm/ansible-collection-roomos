@@ -23,7 +23,7 @@ jobs:
         run: ansible-galaxy collection publish voipnorm-roomos-*.tar.gz --token ${{ secrets.GALAXY_TOKEN }}
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: voipnorm-roomos-*.tar.gz
           generate_release_notes: true
