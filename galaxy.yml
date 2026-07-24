@@ -1,0 +1,20 @@
+---
+namespace: voipnorm
+name: roomos
+version: 0.1.0
+readme: README.md
+authors:
+  - Chris Norman <voipnorm>
+description: Ansible collection for Cisco RoomOS collaboration endpoints (xAPI)
+license:
+  - GPL-3.0-or-later
+tags:
+  - cisco
+  - roomos
+  - xapi
+  - collaboration
+  - webex
+  - video
+repository: https://github.com/voipnorm/ansible-collection-roomos
+issues: https://github.com/voipnorm/ansible-collection-roomos/issues
+# NOTE: No dependencies section — Ansible version requirement goes in meta/runtime.yml

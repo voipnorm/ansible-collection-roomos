@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "packVersion": "0.1.0",
+  "id": "voipnorm-roomos",
+  "name": "Cisco RoomOS",
+  "collection": "voipnorm.roomos",
+  "collectionVersion": "0.1.0",
+  "minAppVersion": "1.0.0",
+  "testedWithAppVersion": "1.0.0",
+  "qualityLevel": "community",
+  "source": "curated",
+  "categoryColor": "#7C3AED",
+  "modules": [
+    {
+      "fqcn": "voipnorm.roomos.roomos_command",
+      "shortName": "roomos_command",
+      "displayName": "RoomOS Command",
+      "description": "Execute xCommands on Cisco RoomOS devices",
+      "fields": [
+        {
+          "fieldId": "COMMAND",
+          "label": "Command",
+          "yamlKey": "command",
+          "type": "text",
+          "required": true,
+          "placeholder": "SystemUnit.Boot",
+          "helpText": "xCommand path in dot notation"
+        },
+        {
+          "fieldId": "ARGUMENTS",
+          "label": "Arguments",
+          "yamlKey": "arguments",
+          "type": "text",
+          "yamlType": "dict",
+          "placeholder": "Action: Restart",
+          "helpText": "Command arguments as key: value pairs"
+        },
+        {
+          "fieldId": "TRANSPORT",
+          "label": "Transport",
+          "yamlKey": "transport",
+          "type": "dropdown",
+          "default": "local",
+          "choices": ["cloud", "local"]
+        },
+        {
+          "fieldId": "DEVICE_ID",
+          "label": "Device ID",
+          "yamlKey": "device_id",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "placeholder": "Webex device ID"
+        },
+        {
+          "fieldId": "TOKEN",
+          "label": "Token",
+          "yamlKey": "token",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "placeholder": "{{ webex_token }}"
+        },
+        {
+          "fieldId": "HOST",
+          "label": "Host",
+          "yamlKey": "host",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "{{ ansible_host }}"
+        },
+        {
+          "fieldId": "USERNAME",
+          "label": "Username",
+          "yamlKey": "username",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "admin"
+        },
+        {
+          "fieldId": "PASSWORD",
+          "label": "Password",
+          "yamlKey": "password",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "{{ device_password }}"
+        },
+        {
+          "fieldId": "VALIDATE_CERTS",
+          "label": "Validate Certs",
+          "yamlKey": "validate_certs",
+          "type": "boolean",
+          "default": false,
+          "advanced": true
+        },
+        {
+          "fieldId": "TIMEOUT",
+          "label": "Timeout",
+          "yamlKey": "timeout",
+          "type": "number",
+          "default": 30,
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "fqcn": "voipnorm.roomos.roomos_config",
+      "shortName": "roomos_config",
+      "displayName": "RoomOS Config",
+      "description": "Set xConfigurations with idempotency, check mode, and diff",
+      "fields": [
+        {
+          "fieldId": "CONFIG",
+          "label": "Configuration",
+          "yamlKey": "config",
+          "type": "text",
+          "yamlType": "dict",
+          "required": true,
+          "multiline": true,
+          "placeholder": "NetworkServices.NTP.Server1.Address: 10.1.1.1",
+          "helpText": "xConfiguration path: value pairs"
+        },
+        {
+          "fieldId": "FAILURE_MODE",
+          "label": "Failure Mode",
+          "yamlKey": "failure_mode",
+          "type": "dropdown",
+          "default": "fail",
+          "choices": ["fail", "warn", "ignore"],
+          "advanced": true,
+          "helpText": "How to handle invalid config paths"
+        },
+        {
+          "fieldId": "TRANSPORT",
+          "label": "Transport",
+          "yamlKey": "transport",
+          "type": "dropdown",
+          "default": "local",
+          "choices": ["cloud", "local"]
+        },
+        {
+          "fieldId": "DEVICE_ID",
+          "label": "Device ID",
+          "yamlKey": "device_id",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+        },
+        {
+          "fieldId": "TOKEN",
+          "label": "Token",
+          "yamlKey": "token",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+        },
+        {
+          "fieldId": "HOST",
+          "label": "Host",
+          "yamlKey": "host",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+        },
+        {
+          "fieldId": "USERNAME",
+          "label": "Username",
+          "yamlKey": "username",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+        },
+        {
+          "fieldId": "PASSWORD",
+          "label": "Password",
+          "yamlKey": "password",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+        },
+        {
+          "fieldId": "VALIDATE_CERTS",
+          "label": "Validate Certs",
+          "yamlKey": "validate_certs",
+          "type": "boolean",
+          "default": false,
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "fqcn": "voipnorm.roomos.roomos_status",
+      "shortName": "roomos_status",
+      "displayName": "RoomOS Status",
+      "description": "Query xStatus values for conditional playbook logic",
+      "fields": [
+        {
+          "fieldId": "PATHS",
+          "label": "Status Paths",
+          "yamlKey": "paths",
+          "type": "text",
+          "yamlType": "list",
+          "required": true,
+          "multiline": true,
+          "placeholder": "Standby.State\nSystemUnit.Uptime",
+          "helpText": "xStatus paths to query (one per line)"
+        },
+        {
+          "fieldId": "ON_MISSING",
+          "label": "On Missing",
+          "yamlKey": "on_missing",
+          "type": "dropdown",
+          "default": "warn",
+          "choices": ["warn", "fail", "ignore"],
+          "helpText": "How to handle paths that don't exist"
+        },
+        {
+          "fieldId": "TRANSPORT",
+          "label": "Transport",
+          "yamlKey": "transport",
+          "type": "dropdown",
+          "default": "local",
+          "choices": ["cloud", "local"]
+        },
+        {
+          "fieldId": "DEVICE_ID",
+          "label": "Device ID",
+          "yamlKey": "device_id",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+        },
+        {
+          "fieldId": "TOKEN",
+          "label": "Token",
+          "yamlKey": "token",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+        },
+        {
+          "fieldId": "HOST",
+          "label": "Host",
+          "yamlKey": "host",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+        },
+        {
+          "fieldId": "USERNAME",
+          "label": "Username",
+          "yamlKey": "username",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+        },
+        {
+          "fieldId": "PASSWORD",
+          "label": "Password",
+          "yamlKey": "password",
+          "type": "text",
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+        },
+        {
+          "fieldId": "VALIDATE_CERTS",
+          "label": "Validate Certs",
+          "yamlKey": "validate_certs",
+          "type": "boolean",
+          "default": false,
+          "advanced": true
+        }
+      ]
+    }
+  ]
+}

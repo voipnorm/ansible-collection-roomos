@@ -1,0 +1,4 @@
+---
+# Integration tests for roomos_command
+# These run against real RoomOS devices (DevNet sandbox or lab)
+# See Gate 7 in megaplan for test details

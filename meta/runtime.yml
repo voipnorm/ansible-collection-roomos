@@ -1,0 +1,7 @@
+---
+requires_ansible: ">=2.15.0"
+action_groups:
+  roomos:
+    - roomos_command
+    - roomos_config
+    - roomos_status

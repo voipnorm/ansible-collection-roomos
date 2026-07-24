@@ -1,0 +1,61 @@
+---
+name: Bug Report
+description: Report a bug in the voipnorm.roomos collection
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Minimal playbook or steps to reproduce.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: collection-version
+    attributes:
+      label: Collection version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: ansible-version
+    attributes:
+      label: Ansible version
+      placeholder: "ansible-core 2.16.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: transport
+    attributes:
+      label: Transport
+      options:
+        - local
+        - cloud
+        - both
+    validations:
+      required: true
+  - type: input
+    id: roomos-version
+    attributes:
+      label: RoomOS version
+      placeholder: "RoomOS 11.14.2"

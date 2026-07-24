@@ -1,0 +1,9 @@
+---
+profile: production
+exclude_paths:
+  - .github/
+  - changelogs/
+  - docs/
+  - tests/fixtures/
+skip_list:
+  - yaml[truthy]

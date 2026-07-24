@@ -1,0 +1,7 @@
+---
+notesdir: fragments
+changes_file: changelog.yaml
+changes_format: combined
+keep_fragments: false
+always_refresh: true
+title: voipnorm.roomos

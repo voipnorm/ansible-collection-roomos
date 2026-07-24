@@ -1,0 +1,87 @@
+---
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - run: yamllint .
+
+  sanity:
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ansible_collections/voipnorm/roomos
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install ansible-core>=2.15
+      - name: Run sanity tests
+        run: ansible-test sanity --python ${{ matrix.python-version }} -v
+        working-directory: ansible_collections/voipnorm/roomos
+
+  unit:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ansible_collections/voipnorm/roomos
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install ansible-core>=2.15 pytest
+      - name: Run unit tests
+        run: ansible-test units --python 3.10 -v
+        working-directory: ansible_collections/voipnorm/roomos
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [sanity, unit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install ansible-core>=2.15
+      - name: Build collection
+        run: ansible-galaxy collection build --force
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: collection-artifact
+          path: voipnorm-roomos-*.tar.gz
+
+  install-smoke:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install ansible-core>=2.15
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: collection-artifact
+      - name: Install collection
+        run: ansible-galaxy collection install voipnorm-roomos-*.tar.gz --force
+      - name: Verify module docs
+        run: ansible-doc voipnorm.roomos.roomos_command
