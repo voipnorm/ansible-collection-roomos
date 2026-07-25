@@ -101,6 +101,19 @@ SENSITIVE_PATH_PATTERNS = [
 ]
 
 
+def is_sensitive_path(path):
+    # type: (str) -> bool
+    """Check if a config path matches a sensitive pattern.
+
+    Uses fnmatch-style glob matching against SENSITIVE_PATH_PATTERNS.
+    """
+    from fnmatch import fnmatch
+    return any(fnmatch(path, pattern) for pattern in SENSITIVE_PATH_PATTERNS)
+
+
+REDACTED_VALUE = '********'
+
+
 # ---------------------------------------------------------------------------
 # Value normalization for idempotency
 # ---------------------------------------------------------------------------

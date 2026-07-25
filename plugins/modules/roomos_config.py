@@ -96,7 +96,9 @@ from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common import (
     ROOMOS_COMMON_ARGS,
+    REDACTED_VALUE,
     get_transport,
+    is_sensitive_path,
     normalize_config_value,
 )
 
@@ -134,14 +136,19 @@ def main():
     if not changed_keys:
         module.exit_json(changed=False, changed_keys=[], failed_keys=[])
 
-    # Build diff
+    # Build diff (redact sensitive paths)
     diff = None
     if module._diff:
-        diff = {
-            'before': {k: current_values.get(k, '') for k in changed_keys},
-            'after': {k: desired_config[k] for k in changed_keys},
-        }
-        # TODO: Redact sensitive paths in diff output
+        before = {}
+        after = {}
+        for k in changed_keys:
+            if is_sensitive_path(k):
+                before[k] = REDACTED_VALUE
+                after[k] = REDACTED_VALUE
+            else:
+                before[k] = current_values.get(k, '')
+                after[k] = desired_config[k]
+        diff = {'before': before, 'after': after}
 
     if module.check_mode:
         module.exit_json(changed=True, changed_keys=changed_keys, failed_keys=[], diff=diff)
