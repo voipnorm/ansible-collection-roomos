@@ -64,7 +64,10 @@ ROOMOS_COMMON_ARGS = dict(
         fallback=(env_fallback, ['ROOMOS_TOKEN']),
     ),
     # Local-only
-    host=dict(type='str'),  # falls back to ansible_host at runtime
+    host=dict(
+        type='str',
+        fallback=(env_fallback, ['ROOMOS_HOST']),
+    ),
     username=dict(
         type='str',
         fallback=(env_fallback, ['ROOMOS_USERNAME']),
@@ -147,25 +150,24 @@ def get_transport(module):
         return CloudTransport(module)
 
     else:
-        # Resolve local auth with inventory var fallbacks
+        # Validate local-required args
         host = module.params.get('host')
         if not host:
-            host = module.params.get('ansible_host') or getattr(module, '_verbosity', None) and None
-            # Try hostvars fallback
-            try:
-                host = module._task._role._variable_manager.get_vars()['ansible_host']
-            except Exception:
-                pass
-        if not host:
-            module.fail_json(msg="transport=local requires 'host' (or set ansible_host in inventory)")
+            module.fail_json(
+                msg="transport=local requires 'host'. Set it directly, "
+                    "use ROOMOS_HOST env var, or use host: '{{ ansible_host }}' in your task.")
 
         username = module.params.get('username')
         if not username:
-            module.fail_json(msg="transport=local requires 'username' (or set roomos_username in inventory)")
+            module.fail_json(
+                msg="transport=local requires 'username'. Set it directly "
+                    "or use ROOMOS_USERNAME env var.")
 
         password = module.params.get('password')
-        if not password:
-            module.fail_json(msg="transport=local requires 'password' (or set roomos_password in inventory)")
+        if password is None:
+            module.fail_json(
+                msg="transport=local requires 'password'. Set it directly "
+                    "or use ROOMOS_PASSWORD env var.")
 
         from ansible_collections.voipnorm.roomos.plugins.module_utils.transport_local import LocalTransport
         return LocalTransport(module, host=host, username=username, password=password)
