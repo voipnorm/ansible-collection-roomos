@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "https://192.168.128.192/putxml",
+    "headers": {
+      "Authorization": "Basic <REDACTED>",
+      "Content-Type": "text/xml"
+    },
+    "body": "<Command>\n  <NonExistent>\n    <Fake>\n      <Path/>\n    </Fake>\n  </NonExistent>\n</Command>\n"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Server": "nginx",
+      "Date": "Sat, 25 Jul 2026 00:45:15 GMT",
+      "Content-Type": "text/xml; charset=UTF-8",
+      "Content-Length": "102",
+      "Connection": "close",
+      "Referrer-Policy": "same-origin",
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "base-uri 'self'; block-all-mixed-content; default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; form-action 'self'; frame-ancestors 'none'",
+      "Permissions-Policy": "fullscreen=(self)",
+      "Strict-Transport-Security": "max-age=0",
+      "Cache-Control": "no-store, max-age=0"
+    },
+    "body": "<?xml version=\"1.0\"?>\n<ActionError>\n  <Reason>No action detected in document</Reason>\n</ActionError>\n\n"
+  }
+}

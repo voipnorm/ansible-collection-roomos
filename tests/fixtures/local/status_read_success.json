@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://192.168.128.192/getxml?location=/Status/SystemUnit",
+    "headers": {
+      "Authorization": "Basic <REDACTED>",
+      "Content-Type": "text/xml"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Server": "nginx",
+      "Date": "Sat, 25 Jul 2026 00:45:11 GMT",
+      "Content-Type": "text/xml; charset=UTF-8",
+      "Content-Length": "2221",
+      "Connection": "close",
+      "Referrer-Policy": "same-origin",
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "base-uri 'self'; block-all-mixed-content; default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; form-action 'self'; frame-ancestors 'none'",
+      "Permissions-Policy": "fullscreen=(self)",
+      "Strict-Transport-Security": "max-age=0",
+      "Cache-Control": "no-store, max-age=0"
+    },
+    "body": "<?xml version=\"1.0\"?>\n<Status product=\"Cisco Codec\" version=\"ce26.7.1.12.67c6e508983\" apiVersion=\"4\">\n  <SystemUnit>\n    <BroadcastName>MyOfficeBar</BroadcastName>\n    <ByodLimited>\n      <Active>False</Active>\n    </ByodLimited>\n    <DeveloperPreview>\n      <Mode>Off</Mode>\n    </DeveloperPreview>\n    <Extensions>\n      <Microsoft>\n        <Supported>True</Supported>\n      </Microsoft>\n    </Extensions>\n    <Hardware>\n      <DRAM>8</DRAM>\n      <HasWifi>True</HasWifi>\n      <MainBoard>\n        <Revision>D</Revision>\n      </MainBoard>\n      <Module>\n        <CompatibilityLevel>1</CompatibilityLevel>\n        <DeviceId>25084ae1-0361-5178-b0c6-0059a714cea9</DeviceId>\n        <SerialNumber>FOC2702N9ZS</SerialNumber>\n      </Module>\n      <Monitoring>\n        <Temperature>\n          <Status>Normal</Status>\n        </Temperature>\n      </Monitoring>\n      <UDI>CS-BAR-K9 V01 FOC2702N9ZS</UDI>\n      <USBC item=\"1\" maxOccurrence=\"n\">\n        <Connected>False</Connected>\n      </USBC>\n    </Hardware>\n    <LastShutdownReason>Upgrade</LastShutdownReason>\n    <LastShutdownTime>2026-07-24T07:42:58Z</LastShutdownTime>\n    <Notifications>\n      <Notification item=\"1\" maxOccurrence=\"n\">\n        <Text>OK</Text>\n        <Type>SoftwareUpgradeOK</Type>\n      </Notification>\n    </Notifications>\n    <ProductId>Cisco Room Bar</ProductId>\n    <ProductPlatform>Room Bar</ProductPlatform>\n    <ProductType>Cisco Codec</ProductType>\n    <Software>\n      <DisplayName>RoomOS 26.7.1.12 67c6e508983</DisplayName>\n      <Name>s53300</Name>\n      <OptionKeys>\n        <DeveloperPreview>False</DeveloperPreview>\n        <Encryption>True</Encryption>\n        <MultiSite>False</MultiSite>\n        <RemoteMonitoring>False</RemoteMonitoring>\n      </OptionKeys>\n      <ReleaseDate>2026-07-16</ReleaseDate>\n      <Version>ce26.7.1.12.67c6e508983</Version>\n    </Software>\n    <State>\n      <NumberOfActiveCalls>0</NumberOfActiveCalls>\n      <NumberOfInProgressCalls>0</NumberOfInProgressCalls>\n      <NumberOfSuspendedCalls>0</NumberOfSuspendedCalls>\n      <Subsystem>\n        <Application>Initialized</Application>\n      </Subsystem>\n      <System>Initialized</System>\n    </State>\n    <Uptime>61273</Uptime>\n  </SystemUnit>\n</Status>\n"
+  }
+}

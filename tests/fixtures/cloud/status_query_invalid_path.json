@@ -1,0 +1,31 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://webexapis.com/v1/xapi/status?deviceId=Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=&name=NonExistent.Fake.Path",
+    "headers": {
+      "Authorization": "Bearer <REDACTED>",
+      "Content-Type": "application/json"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "Trackingid": "ROUTERGW_01dc4ea9-cb6f-4956-859f-be8671037322",
+      "Cache-Control": "no-cache, no-store",
+      "Date": "Sat, 25 Jul 2026 00:45:08 GMT",
+      "Server": "istio-envoy",
+      "X-Envoy-Upstream-Service-Time": "21",
+      "X-Normalized-Path": "/xapi/api/xapi/status",
+      "Content-Type": "application/json",
+      "Content-Length": "131",
+      "Connection": "close"
+    },
+    "body": {
+      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "result": {}
+    }
+  }
+}

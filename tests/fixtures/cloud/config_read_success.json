@@ -1,0 +1,64 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://webexapis.com/v1/deviceConfigurations?deviceId=Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=&key=Audio.DefaultVolume",
+    "headers": {
+      "Authorization": "Bearer <REDACTED>",
+      "Content-Type": "application/json"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "Trackingid": "ROUTERGW_a096021f-72c3-4acf-80cc-7b7fa5889517",
+      "Cache-Control": "no-cache, no-store",
+      "Date": "Sat, 25 Jul 2026 00:45:09 GMT",
+      "Server": "istio-envoy",
+      "X-Envoy-Upstream-Service-Time": "248",
+      "X-Normalized-Path": "/device-configuration/api/v1/hydra/deviceConfigurations",
+      "Content-Type": "application/json",
+      "Content-Length": "551",
+      "Connection": "close"
+    },
+    "body": {
+      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "items": {
+        "Audio.DefaultVolume": {
+          "value": 50,
+          "source": "default",
+          "sources": {
+            "default": {
+              "value": 50,
+              "editability": {
+                "isEditable": false,
+                "reason": "FACTORY_DEFAULT"
+              },
+              "level": "schemaDefault",
+              "enforced": false
+            },
+            "configured": {
+              "value": null,
+              "editability": {
+                "isEditable": true
+              },
+              "level": "device",
+              "enforced": false
+            }
+          },
+          "valueSpace": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "appliedConfigurationValue": {
+            "value": 50,
+            "updatedAt": "2026-07-24T19:45:37Z"
+          }
+        }
+      }
+    }
+  }
+}

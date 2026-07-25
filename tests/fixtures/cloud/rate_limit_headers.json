@@ -1,0 +1,16 @@
+{
+  "rate_limit_headers": {},
+  "all_response_headers": {
+    "Vary": "Origin",
+    "X-Content-Type-Options": "nosniff",
+    "Trackingid": "ROUTERGW_b48e93f5-faf4-45f8-bf35-a7c97f691e13",
+    "Cache-Control": "no-cache, no-store",
+    "Date": "Sat, 25 Jul 2026 00:45:10 GMT",
+    "Server": "istio-envoy",
+    "X-Envoy-Upstream-Service-Time": "184",
+    "X-Normalized-Path": "/device-configuration/api/v1/hydra/deviceConfigurations",
+    "Content-Type": "application/json",
+    "Content-Length": "552",
+    "Connection": "close"
+  }
+}

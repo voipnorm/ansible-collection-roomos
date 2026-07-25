@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "https://webexapis.com/v1/xapi/command/NonExistent.Fake.Command",
+    "headers": {
+      "Authorization": "Bearer <REDACTED>",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM="
+    }
+  },
+  "response": {
+    "status": 400,
+    "reason": "Bad Request",
+    "headers": {
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "Trackingid": "ROUTERGW_3e59d4d5-d3da-4bd6-a3f5-7d615e07e049",
+      "Date": "Sat, 25 Jul 2026 00:45:10 GMT",
+      "Server": "istio-envoy",
+      "X-Envoy-Upstream-Service-Time": "53",
+      "X-Normalized-Path": "/xapi/api/xapi/command/{command:.+}",
+      "Content-Type": "application/json",
+      "Content-Length": "205",
+      "Connection": "close"
+    },
+    "body": "{\"message\":\"[Command 'NonExistent.Fake.Command' not supported]\",\"errors\":[{\"description\":\"[Command 'NonExistent.Fake.Command' not supported]\"}],\"trackingId\":\"ROUTERGW_3e59d4d5-d3da-4bd6-a3f5-7d615e07e049\"}"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://webexapis.com/v1/xapi/status?deviceId=Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=&name=Standby.State",
+    "headers": {
+      "Authorization": "Bearer <REDACTED>",
+      "Content-Type": "application/json"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "Trackingid": "ROUTERGW_3dc2a8ce-db12-4666-8ee2-5bb66d23e7aa",
+      "Cache-Control": "no-cache, no-store",
+      "Date": "Sat, 25 Jul 2026 00:45:08 GMT",
+      "Server": "istio-envoy",
+      "X-Envoy-Upstream-Service-Time": "136",
+      "X-Normalized-Path": "/xapi/api/xapi/status",
+      "Content-Type": "application/json",
+      "Content-Length": "160",
+      "Connection": "close"
+    },
+    "body": {
+      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "result": {
+        "Standby": {
+          "State": "Standby"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://192.168.128.192/getxml?location=/Status/SystemUnit",
+    "headers": {
+      "Authorization": "Basic <REDACTED>",
+      "Content-Type": "text/xml"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 401,
+    "reason": "Unauthorized",
+    "headers": {
+      "Server": "nginx",
+      "Date": "Sat, 25 Jul 2026 00:45:19 GMT",
+      "Content-Type": "text/plain; charset=UTF-8",
+      "Content-Length": "253",
+      "Connection": "close",
+      "WWW-Authenticate": "Basic realm=\"CISCO-Endpoint\"",
+      "Referrer-Policy": "same-origin",
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "base-uri 'self'; block-all-mixed-content; default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; form-action 'self'; frame-ancestors 'none'",
+      "Permissions-Policy": "fullscreen=(self)",
+      "Strict-Transport-Security": "max-age=0",
+      "Cache-Control": "no-store, max-age=0"
+    },
+    "body": "401 Unauthorized\n\nThis server could not verify that you are authorized to access the document you requested. Either you supplied the wrong credentials (e.g., bad password), or your browser does not understand how to supply the credentials required.\n\n   "
+  }
+}

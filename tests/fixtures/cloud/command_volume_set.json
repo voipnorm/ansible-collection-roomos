@@ -1,0 +1,36 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "https://webexapis.com/v1/xapi/command/Audio.Volume.Set",
+    "headers": {
+      "Authorization": "Bearer <REDACTED>",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "arguments": {
+        "Level": 50
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "Trackingid": "ROUTERGW_4dbda840-bd60-480b-9fa0-0a464294cc66",
+      "Content-Disposition": "inline;filename=f.txt",
+      "Date": "Sat, 25 Jul 2026 00:45:10 GMT",
+      "Server": "istio-envoy",
+      "X-Envoy-Upstream-Service-Time": "95",
+      "X-Normalized-Path": "/xapi/api/xapi/command/{command:.+}",
+      "Content-Type": "application/json",
+      "Content-Length": "131",
+      "Connection": "close"
+    },
+    "body": {
+      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "result": {}
+    }
+  }
+}

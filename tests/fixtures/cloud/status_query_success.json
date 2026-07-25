@@ -1,0 +1,36 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "https://webexapis.com/v1/xapi/status/query",
+    "headers": {
+      "Authorization": "Bearer <REDACTED>",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "arguments": {
+        "StatusPathList": [
+          "SystemUnit.Uptime",
+          "Standby.State"
+        ]
+      }
+    }
+  },
+  "response": {
+    "status": 404,
+    "reason": "Not Found",
+    "headers": {
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "Trackingid": "ROUTERGW_5fc2975a-7a81-4a49-af3e-46fcc78348f2",
+      "Date": "Sat, 25 Jul 2026 00:33:33 GMT",
+      "Server": "istio-envoy",
+      "X-Envoy-Upstream-Service-Time": "43",
+      "Content-Type": "application/json",
+      "Content-Length": "189",
+      "Connection": "close"
+    },
+    "body": "{\"message\":\"The requested resource could not be found.\",\"errors\":[{\"description\":\"The requested resource could not be found.\"}],\"trackingId\":\"ROUTERGW_5fc2975a-7a81-4a49-af3e-46fcc78348f2\"}"
+  },
+  "error": "HTTP Error 404: Not Found"
+}
