@@ -1,0 +1,55 @@
+---
+# Cloud Demo: Manage RoomOS devices via Webex Cloud API
+#
+# Prerequisites:
+#   1. A Webex API token with xAPI scopes (see docs/quickstart.md)
+#   2. Your device's Webex device ID
+#
+# Usage:
+#   export WEBEX_TOKEN="your-webex-token"
+#   ansible-playbook docs/examples/cloud-demo.yml -e target_device=YOUR_DEVICE_ID
+
+- name: RoomOS Cloud Management Demo
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    webex_token: "{{ lookup('env', 'WEBEX_TOKEN') }}"
+    target_device: "YOUR_DEVICE_ID"
+
+  tasks:
+    - name: Query device status
+      voipnorm.roomos.roomos_status:
+        paths:
+          - Standby.State
+          - SystemUnit.Software.Version
+          - SystemUnit.Uptime
+        transport: cloud
+        device_id: "{{ target_device }}"
+        token: "{{ webex_token }}"
+      register: status
+
+    - name: Display device info
+      ansible.builtin.debug:
+        msg: >-
+          Version: {{ status.values['SystemUnit.Software.Version'] }},
+          Uptime: {{ status.values['SystemUnit.Uptime'] }}s,
+          Standby: {{ status.values['Standby.State'] }}
+
+    - name: Configure NTP and timezone
+      voipnorm.roomos.roomos_config:
+        config:
+          NetworkServices.NTP.Server1.Address: "10.1.1.1"
+          Time.Zone: "America/Los_Angeles"
+        transport: cloud
+        device_id: "{{ target_device }}"
+        token: "{{ webex_token }}"
+
+    - name: Set default audio volume
+      voipnorm.roomos.roomos_config:
+        config:
+          Audio.DefaultVolume: "50"
+        transport: cloud
+        device_id: "{{ target_device }}"
+        token: "{{ webex_token }}"

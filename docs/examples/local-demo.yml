@@ -1,0 +1,61 @@
+---
+# Local Demo: Manage RoomOS devices via direct HTTP
+#
+# Prerequisites:
+#   1. Direct IP access to the RoomOS device
+#   2. A local admin account on the device
+#
+# Usage:
+#   export ROOMOS_PASSWORD="your-device-password"
+#   ansible-playbook docs/examples/local-demo.yml \
+#     -e device_host=10.0.1.50 -e device_user=admin
+
+- name: RoomOS On-Prem Configuration Demo
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    device_host: "10.0.1.50"
+    device_user: admin
+    device_pass: "{{ lookup('env', 'ROOMOS_PASSWORD') }}"
+
+  tasks:
+    - name: Query current device status
+      voipnorm.roomos.roomos_status:
+        paths:
+          - SystemUnit.Software.Version
+          - SystemUnit.Uptime
+          - Audio.Volume
+        transport: local
+        host: "{{ device_host }}"
+        username: "{{ device_user }}"
+        password: "{{ device_pass }}"
+        validate_certs: false
+      register: status
+
+    - name: Display current status
+      ansible.builtin.debug:
+        var: status.values
+
+    - name: Set default volume and SIP config
+      voipnorm.roomos.roomos_config:
+        config:
+          Audio.DefaultVolume: "50"
+          SIP.Proxy1.Address: "cucm.example.com"
+        transport: local
+        host: "{{ device_host }}"
+        username: "{{ device_user }}"
+        password: "{{ device_pass }}"
+        validate_certs: false
+
+    - name: Reboot device
+      voipnorm.roomos.roomos_command:
+        command: SystemUnit.Boot
+        arguments:
+          Action: Restart
+        transport: local
+        host: "{{ device_host }}"
+        username: "{{ device_user }}"
+        password: "{{ device_pass }}"
+        validate_certs: false
