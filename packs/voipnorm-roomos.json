@@ -141,35 +141,40 @@
           "label": "Device ID",
           "yamlKey": "device_id",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "placeholder": "Webex device ID"
         },
         {
           "fieldId": "TOKEN",
           "label": "Token",
           "yamlKey": "token",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "placeholder": "{{ webex_token }}"
         },
         {
           "fieldId": "HOST",
           "label": "Host",
           "yamlKey": "host",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "{{ ansible_host }}"
         },
         {
           "fieldId": "USERNAME",
           "label": "Username",
           "yamlKey": "username",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "admin"
         },
         {
           "fieldId": "PASSWORD",
           "label": "Password",
           "yamlKey": "password",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "{{ device_password }}"
         },
         {
           "fieldId": "VALIDATE_CERTS",
@@ -177,6 +182,14 @@
           "yamlKey": "validate_certs",
           "type": "boolean",
           "default": false,
+          "advanced": true
+        },
+        {
+          "fieldId": "TIMEOUT",
+          "label": "Timeout",
+          "yamlKey": "timeout",
+          "type": "number",
+          "default": 30,
           "advanced": true
         }
       ]
@@ -220,35 +233,40 @@
           "label": "Device ID",
           "yamlKey": "device_id",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "placeholder": "Webex device ID"
         },
         {
           "fieldId": "TOKEN",
           "label": "Token",
           "yamlKey": "token",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "placeholder": "{{ webex_token }}"
         },
         {
           "fieldId": "HOST",
           "label": "Host",
           "yamlKey": "host",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "{{ ansible_host }}"
         },
         {
           "fieldId": "USERNAME",
           "label": "Username",
           "yamlKey": "username",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "admin"
         },
         {
           "fieldId": "PASSWORD",
           "label": "Password",
           "yamlKey": "password",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" }
+          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "placeholder": "{{ device_password }}"
         },
         {
           "fieldId": "VALIDATE_CERTS",
@@ -256,6 +274,14 @@
           "yamlKey": "validate_certs",
           "type": "boolean",
           "default": false,
+          "advanced": true
+        },
+        {
+          "fieldId": "TIMEOUT",
+          "label": "Timeout",
+          "yamlKey": "timeout",
+          "type": "number",
+          "default": 30,
           "advanced": true
         }
       ]
