@@ -16,15 +16,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - run: pip install ansible-core>=2.15
+      - run: pip install ansible-core>=2.15 pytest
 
       - name: Run integration tests
         run: |
-          ansible-test integration --python 3.10 -v \
-            roomos_command roomos_config roomos_status
+          PYTHONPATH=$(pwd)/../../ python -m pytest \
+            tests/integration/ -v -s --tb=short
         working-directory: ansible_collections/voipnorm/roomos
         env:
           WEBEX_TOKEN: ${{ secrets.WEBEX_TOKEN }}
-          DEVNET_HOST: ${{ secrets.DEVNET_HOST }}
-          DEVNET_USER: ${{ secrets.DEVNET_USER }}
-          DEVNET_PASS: ${{ secrets.DEVNET_PASS }}
+          ROOMOS_DEVICE_ID: ${{ secrets.ROOMOS_DEVICE_ID }}
+          ROOMOS_HOST: ${{ secrets.ROOMOS_HOST }}
+          ROOMOS_USERNAME: ${{ secrets.ROOMOS_USERNAME }}
+          ROOMOS_PASSWORD: ${{ secrets.ROOMOS_PASSWORD }}
