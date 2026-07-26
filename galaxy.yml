@@ -1,13 +1,12 @@
 ---
 namespace: voipnorm
 name: roomos
-version: 0.1.0
+version: 0.1.1
 readme: README.md
 authors:
   - Chris Norman <voipnorm>
 description: Ansible collection for Cisco RoomOS collaboration endpoints (xAPI)
-license:
-  - GPL-3.0-or-later
+license_file: LICENSE
 tags:
   - cisco
   - roomos
