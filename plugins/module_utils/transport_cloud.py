@@ -99,6 +99,32 @@ class CloudTransport(RoomOSTransport):
     # -----------------------------------------------------------------------
 
     @staticmethod
+    def _coerce_value(value):
+        """Coerce string config values to native Python types.
+
+        The Webex JSON Patch API requires native types (int 50, not string "50").
+        Local transport uses XML where everything is a string, but cloud needs this.
+        """
+        if not isinstance(value, str):
+            return value
+        # Boolean
+        if value.lower() in ('true', 'on', 'yes'):
+            return True
+        if value.lower() in ('false', 'off', 'no'):
+            return False
+        # Integer
+        try:
+            return int(value)
+        except ValueError:
+            pass
+        # Float
+        try:
+            return float(value)
+        except ValueError:
+            pass
+        return value
+
+    @staticmethod
     def _flatten_dict(nested, result, prefix=''):
         """Flatten nested dict to dot-notation keys.
 
@@ -139,12 +165,20 @@ class CloudTransport(RoomOSTransport):
             data = self._request('GET', url)
             items = data.get('items', {})
             for key, info in items.items():
-                # Use appliedConfigurationValue for the effective value (ADR 0004 §4)
-                applied = info.get('appliedConfigurationValue')
-                if applied and applied.get('value') is not None:
-                    result[key] = applied['value']
+                # Prefer sources.configured.value when explicitly set (updates
+                # synchronously after PATCH).  Fall back to appliedConfigurationValue
+                # for factory defaults where configured is null (ADR 0004 §4).
+                sources = info.get('sources', {})
+                configured = sources.get('configured', {})
+                configured_val = configured.get('value') if configured else None
+                if configured_val is not None:
+                    result[key] = configured_val
                 else:
-                    result[key] = info.get('value')
+                    applied = info.get('appliedConfigurationValue')
+                    if applied and applied.get('value') is not None:
+                        result[key] = applied['value']
+                    else:
+                        result[key] = info.get('value')
         return result
 
     def set_configuration(self, config):
@@ -159,7 +193,7 @@ class CloudTransport(RoomOSTransport):
             patch_ops.append({
                 'op': 'replace',
                 'path': '%s/sources/configured/value' % path,
-                'value': value,
+                'value': self._coerce_value(value),
             })
         body = json.dumps(patch_ops)
         self._request('PATCH', url, data=body,

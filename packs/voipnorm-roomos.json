@@ -4,97 +4,100 @@
   "id": "voipnorm-roomos",
   "name": "Cisco RoomOS",
   "collection": "voipnorm.roomos",
-  "collectionVersion": "0.1.0",
+  "collectionVersion": "0.1.3",
   "minAppVersion": "1.0.0",
   "testedWithAppVersion": "1.0.0",
+  "publishedAt": "2026-07-27T00:00:00Z",
   "qualityLevel": "community",
   "source": "curated",
   "categoryColor": "#7C3AED",
   "modules": [
     {
       "fqcn": "voipnorm.roomos.roomos_command",
-      "shortName": "roomos_command",
-      "displayName": "RoomOS Command",
-      "description": "Execute xCommands on Cisco RoomOS devices",
+      "blockType": "voipnorm_roomos_command",
+      "label": "roomos_command",
+      "tooltip": "Execute xCommands on Cisco RoomOS devices",
+      "helpUrl": "https://github.com/voipnorm/ansible-collection-roomos",
+      "structure": { "type": "flat" },
       "fields": [
         {
+          "key": "command",
           "fieldId": "COMMAND",
           "label": "Command",
-          "yamlKey": "command",
           "type": "text",
           "required": true,
           "placeholder": "SystemUnit.Boot",
-          "helpText": "xCommand path in dot notation"
+          "description": "xCommand path in dot notation"
         },
         {
+          "key": "arguments",
           "fieldId": "ARGUMENTS",
           "label": "Arguments",
-          "yamlKey": "arguments",
           "type": "text",
           "yamlType": "dict",
           "placeholder": "Action: Restart",
-          "helpText": "Command arguments as key: value pairs"
+          "description": "Command arguments as key: value pairs"
         },
         {
+          "key": "transport",
           "fieldId": "TRANSPORT",
           "label": "Transport",
-          "yamlKey": "transport",
           "type": "dropdown",
           "default": "local",
-          "choices": ["cloud", "local"]
+          "options": [["cloud", "cloud"], ["local", "local"]]
         },
         {
+          "key": "device_id",
           "fieldId": "DEVICE_ID",
           "label": "Device ID",
-          "yamlKey": "device_id",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "visibleWhen": { "TRANSPORT": "cloud" },
           "placeholder": "Webex device ID"
         },
         {
+          "key": "token",
           "fieldId": "TOKEN",
           "label": "Token",
-          "yamlKey": "token",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "visibleWhen": { "TRANSPORT": "cloud" },
           "placeholder": "{{ webex_token }}"
         },
         {
+          "key": "host",
           "fieldId": "HOST",
           "label": "Host",
-          "yamlKey": "host",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "{{ ansible_host }}"
         },
         {
+          "key": "username",
           "fieldId": "USERNAME",
           "label": "Username",
-          "yamlKey": "username",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "admin"
         },
         {
+          "key": "password",
           "fieldId": "PASSWORD",
           "label": "Password",
-          "yamlKey": "password",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "{{ device_password }}"
         },
         {
+          "key": "validate_certs",
           "fieldId": "VALIDATE_CERTS",
           "label": "Validate Certs",
-          "yamlKey": "validate_certs",
           "type": "boolean",
           "default": false,
           "advanced": true
         },
         {
+          "key": "timeout",
           "fieldId": "TIMEOUT",
           "label": "Timeout",
-          "yamlKey": "timeout",
           "type": "number",
           "default": 30,
           "advanced": true
@@ -103,91 +106,93 @@
     },
     {
       "fqcn": "voipnorm.roomos.roomos_config",
-      "shortName": "roomos_config",
-      "displayName": "RoomOS Config",
-      "description": "Set xConfigurations with idempotency, check mode, and diff",
+      "blockType": "voipnorm_roomos_config",
+      "label": "roomos_config",
+      "tooltip": "Set xConfigurations with idempotency, check mode, and diff",
+      "helpUrl": "https://github.com/voipnorm/ansible-collection-roomos",
+      "structure": { "type": "flat" },
       "fields": [
         {
+          "key": "config",
           "fieldId": "CONFIG",
           "label": "Configuration",
-          "yamlKey": "config",
           "type": "text",
           "yamlType": "dict",
           "required": true,
           "multiline": true,
           "placeholder": "NetworkServices.NTP.Server1.Address: 10.1.1.1",
-          "helpText": "xConfiguration path: value pairs"
+          "description": "xConfiguration path: value pairs"
         },
         {
+          "key": "failure_mode",
           "fieldId": "FAILURE_MODE",
           "label": "Failure Mode",
-          "yamlKey": "failure_mode",
           "type": "dropdown",
           "default": "fail",
-          "choices": ["fail", "warn", "ignore"],
+          "options": [["fail", "fail"], ["warn", "warn"], ["ignore", "ignore"]],
           "advanced": true,
-          "helpText": "How to handle invalid config paths"
+          "description": "How to handle invalid config paths"
         },
         {
+          "key": "transport",
           "fieldId": "TRANSPORT",
           "label": "Transport",
-          "yamlKey": "transport",
           "type": "dropdown",
           "default": "local",
-          "choices": ["cloud", "local"]
+          "options": [["cloud", "cloud"], ["local", "local"]]
         },
         {
+          "key": "device_id",
           "fieldId": "DEVICE_ID",
           "label": "Device ID",
-          "yamlKey": "device_id",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "visibleWhen": { "TRANSPORT": "cloud" },
           "placeholder": "Webex device ID"
         },
         {
+          "key": "token",
           "fieldId": "TOKEN",
           "label": "Token",
-          "yamlKey": "token",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "visibleWhen": { "TRANSPORT": "cloud" },
           "placeholder": "{{ webex_token }}"
         },
         {
+          "key": "host",
           "fieldId": "HOST",
           "label": "Host",
-          "yamlKey": "host",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "{{ ansible_host }}"
         },
         {
+          "key": "username",
           "fieldId": "USERNAME",
           "label": "Username",
-          "yamlKey": "username",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "admin"
         },
         {
+          "key": "password",
           "fieldId": "PASSWORD",
           "label": "Password",
-          "yamlKey": "password",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "{{ device_password }}"
         },
         {
+          "key": "validate_certs",
           "fieldId": "VALIDATE_CERTS",
           "label": "Validate Certs",
-          "yamlKey": "validate_certs",
           "type": "boolean",
           "default": false,
           "advanced": true
         },
         {
+          "key": "timeout",
           "fieldId": "TIMEOUT",
           "label": "Timeout",
-          "yamlKey": "timeout",
           "type": "number",
           "default": 30,
           "advanced": true
@@ -196,90 +201,92 @@
     },
     {
       "fqcn": "voipnorm.roomos.roomos_status",
-      "shortName": "roomos_status",
-      "displayName": "RoomOS Status",
-      "description": "Query xStatus values for conditional playbook logic",
+      "blockType": "voipnorm_roomos_status",
+      "label": "roomos_status",
+      "tooltip": "Query xStatus values for conditional playbook logic",
+      "helpUrl": "https://github.com/voipnorm/ansible-collection-roomos",
+      "structure": { "type": "flat" },
       "fields": [
         {
+          "key": "paths",
           "fieldId": "PATHS",
           "label": "Status Paths",
-          "yamlKey": "paths",
           "type": "text",
           "yamlType": "list",
           "required": true,
           "multiline": true,
           "placeholder": "Standby.State\nSystemUnit.Uptime",
-          "helpText": "xStatus paths to query (one per line)"
+          "description": "xStatus paths to query (one per line)"
         },
         {
+          "key": "on_missing",
           "fieldId": "ON_MISSING",
           "label": "On Missing",
-          "yamlKey": "on_missing",
           "type": "dropdown",
           "default": "warn",
-          "choices": ["warn", "fail", "ignore"],
-          "helpText": "How to handle paths that don't exist"
+          "options": [["warn", "warn"], ["fail", "fail"], ["ignore", "ignore"]],
+          "description": "How to handle paths that don't exist"
         },
         {
+          "key": "transport",
           "fieldId": "TRANSPORT",
           "label": "Transport",
-          "yamlKey": "transport",
           "type": "dropdown",
           "default": "local",
-          "choices": ["cloud", "local"]
+          "options": [["cloud", "cloud"], ["local", "local"]]
         },
         {
+          "key": "device_id",
           "fieldId": "DEVICE_ID",
           "label": "Device ID",
-          "yamlKey": "device_id",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "visibleWhen": { "TRANSPORT": "cloud" },
           "placeholder": "Webex device ID"
         },
         {
+          "key": "token",
           "fieldId": "TOKEN",
           "label": "Token",
-          "yamlKey": "token",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "cloud" },
+          "visibleWhen": { "TRANSPORT": "cloud" },
           "placeholder": "{{ webex_token }}"
         },
         {
+          "key": "host",
           "fieldId": "HOST",
           "label": "Host",
-          "yamlKey": "host",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "{{ ansible_host }}"
         },
         {
+          "key": "username",
           "fieldId": "USERNAME",
           "label": "Username",
-          "yamlKey": "username",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "admin"
         },
         {
+          "key": "password",
           "fieldId": "PASSWORD",
           "label": "Password",
-          "yamlKey": "password",
           "type": "text",
-          "visibleWhen": { "field": "TRANSPORT", "value": "local" },
+          "visibleWhen": { "TRANSPORT": "local" },
           "placeholder": "{{ device_password }}"
         },
         {
+          "key": "validate_certs",
           "fieldId": "VALIDATE_CERTS",
           "label": "Validate Certs",
-          "yamlKey": "validate_certs",
           "type": "boolean",
           "default": false,
           "advanced": true
         },
         {
+          "key": "timeout",
           "fieldId": "TIMEOUT",
           "label": "Timeout",
-          "yamlKey": "timeout",
           "type": "number",
           "default": 30,
           "advanced": true
