@@ -4,7 +4,7 @@
   "id": "voipnorm-roomos",
   "name": "Cisco RoomOS",
   "collection": "voipnorm.roomos",
-  "collectionVersion": "0.1.3",
+  "collectionVersion": "0.1.5",
   "minAppVersion": "1.0.0",
   "testedWithAppVersion": "1.0.0",
   "publishedAt": "2026-07-27T00:00:00Z",

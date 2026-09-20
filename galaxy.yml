@@ -1,7 +1,7 @@
 ---
 namespace: voipnorm
 name: roomos
-version: 0.1.4
+version: 0.1.5
 readme: README.md
 authors:
   - Chris Norman <voipnorm>

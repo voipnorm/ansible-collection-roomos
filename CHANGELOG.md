@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5 (2026-09-19)
+
+### Security
+
+- Removed test-device credentials and identifiers from integration-test defaults, documentation comments, and captured fixtures. Integration tooling now requires credentials to be supplied explicitly through environment variables.
+
 ## 0.1.4 (2026-07-30)
 
 ### Bug Fixes
