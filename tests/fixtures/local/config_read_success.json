@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "url": "https://192.168.128.192/getxml?location=/Configuration/Audio",
+    "url": "https://roomos-test.invalid/getxml?location=/Configuration/Audio",
     "headers": {
       "Authorization": "Basic <REDACTED>",
       "Content-Type": "text/xml"

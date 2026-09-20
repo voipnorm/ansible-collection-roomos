@@ -7,7 +7,7 @@
       "Content-Type": "application/json"
     },
     "body": {
-      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "deviceId": "test-device-id",
       "arguments": {
         "StatusPathList": [
           "SystemUnit.Uptime",

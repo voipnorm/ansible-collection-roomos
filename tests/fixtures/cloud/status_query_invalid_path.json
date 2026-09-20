@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "url": "https://webexapis.com/v1/xapi/status?deviceId=Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=&name=NonExistent.Fake.Path",
+    "url": "https://webexapis.com/v1/xapi/status?deviceId=test-device-id&name=NonExistent.Fake.Path",
     "headers": {
       "Authorization": "Bearer <REDACTED>",
       "Content-Type": "application/json"
@@ -24,7 +24,7 @@
       "Connection": "close"
     },
     "body": {
-      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "deviceId": "test-device-id",
       "result": {}
     }
   }

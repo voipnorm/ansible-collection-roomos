@@ -5,10 +5,10 @@
 #
 # Usage:
 #   export WEBEX_TOKEN="your-token"
-#   export ROOMOS_HOST="192.168.128.192"
+#   export ROOMOS_HOST="roomos.example.com"
 #   export ROOMOS_DEVICE_ID="Y2lzY29..."
-#   export ROOMOS_USERNAME="admin"        # optional, default: admin
-#   export ROOMOS_PASSWORD=""             # optional, default: empty
+#   export ROOMOS_USERNAME="admin"
+#   export ROOMOS_PASSWORD="your-device-password"
 #   python3 tests/validate_api.py
 #
 # Outputs:
@@ -33,10 +33,9 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 WEBEX_TOKEN = os.environ.get('WEBEX_TOKEN', '')
-DEVICE_ID = os.environ.get('ROOMOS_DEVICE_ID',
-    'Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=')
-HOST = os.environ.get('ROOMOS_HOST', '192.168.128.192')
-USERNAME = os.environ.get('ROOMOS_USERNAME', 'admin')
+DEVICE_ID = os.environ.get('ROOMOS_DEVICE_ID', '')
+HOST = os.environ.get('ROOMOS_HOST', '')
+USERNAME = os.environ.get('ROOMOS_USERNAME', '')
 PASSWORD = os.environ.get('ROOMOS_PASSWORD', '')
 
 FIXTURES_DIR = Path(__file__).parent / 'fixtures'
@@ -483,9 +482,17 @@ def main():
     print('Gate 0.5 — RoomOS API Validation')
     print('=' * 60)
 
-    if not WEBEX_TOKEN:
-        print('❌ WEBEX_TOKEN not set. Export it first:')
-        print('   export WEBEX_TOKEN="your-token"')
+    required = {
+        'WEBEX_TOKEN': WEBEX_TOKEN,
+        'ROOMOS_DEVICE_ID': DEVICE_ID,
+        'ROOMOS_HOST': HOST,
+        'ROOMOS_USERNAME': USERNAME,
+        'ROOMOS_PASSWORD': PASSWORD,
+    }
+    missing = [name for name, value in required.items() if not value]
+    if missing:
+        print('❌ Missing required environment variables: %s' % ', '.join(missing))
+        print('   Export the credentials for the test device before running this script.')
         sys.exit(1)
 
     print(f'\nDevice ID: {DEVICE_ID[:30]}...')

@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "url": "https://192.168.128.192/getxml?location=/Status/SystemUnit",
+    "url": "https://roomos-test.invalid/getxml?location=/Status/SystemUnit",
     "headers": {
       "Authorization": "Basic <REDACTED>",
       "Content-Type": "text/xml"

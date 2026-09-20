@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "PATCH",
-    "url": "https://webexapis.com/v1/deviceConfigurations?deviceId=Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+    "url": "https://webexapis.com/v1/deviceConfigurations?deviceId=test-device-id",
     "headers": {
       "Authorization": "Bearer <REDACTED>",
       "Content-Type": "application/json-patch+json"
@@ -23,7 +23,7 @@
       "Connection": "close"
     },
     "body": {
-      "deviceId": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=",
+      "deviceId": "test-device-id",
       "items": {
         "UserInterface.Whiteboard.Deletion": {
           "value": "Auto",

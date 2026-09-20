@@ -6,9 +6,9 @@
 # Run manually or via the nightly-integration workflow.
 #
 # Usage (local transport):
-#   export ROOMOS_HOST="192.168.128.192"
-#   export ROOMOS_USERNAME="christno"
-#   export ROOMOS_PASSWORD="Giantnorm012!"
+#   export ROOMOS_HOST="roomos.example.com"
+#   export ROOMOS_USERNAME="admin"
+#   export ROOMOS_PASSWORD="your-device-password"
 #   pytest tests/integration/ -v -k local
 #
 # Usage (cloud transport):
@@ -35,11 +35,10 @@ import pytest
 # ---------------------------------------------------------------------------
 
 WEBEX_TOKEN = os.environ.get('WEBEX_TOKEN', '')
-DEVICE_ID = os.environ.get('ROOMOS_DEVICE_ID',
-    'Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL0RFVklDRS84MTNhNjg3My00ZTFhLTQzMjAtYjBlZC0wYTMyOTM0YTg5NzM=')
-HOST = os.environ.get('ROOMOS_HOST', '192.168.128.192')
-USERNAME = os.environ.get('ROOMOS_USERNAME', 'christno')
-PASSWORD = os.environ.get('ROOMOS_PASSWORD', 'Giantnorm012!')
+DEVICE_ID = os.environ.get('ROOMOS_DEVICE_ID', '')
+HOST = os.environ.get('ROOMOS_HOST', '')
+USERNAME = os.environ.get('ROOMOS_USERNAME', '')
+PASSWORD = os.environ.get('ROOMOS_PASSWORD', '')
 
 # ---------------------------------------------------------------------------
 # Skip conditions
