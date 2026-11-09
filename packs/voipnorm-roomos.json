@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "packVersion": "0.1.0",
+  "packVersion": "1.1.1",
   "id": "voipnorm-roomos",
   "name": "Cisco RoomOS",
   "collection": "voipnorm.roomos",
-  "collectionVersion": "0.1.5",
+  "collectionVersion": "0.1.6",
   "minAppVersion": "1.0.0",
   "testedWithAppVersion": "1.0.0",
-  "publishedAt": "2026-07-27T00:00:00Z",
-  "qualityLevel": "community",
+  "publishedAt": "2026-09-20T00:00:00Z",
+  "qualityLevel": "curated",
   "source": "curated",
   "categoryColor": "#7C3AED",
   "modules": [
@@ -18,7 +18,9 @@
       "label": "roomos_command",
       "tooltip": "Execute xCommands on Cisco RoomOS devices",
       "helpUrl": "https://github.com/voipnorm/ansible-collection-roomos",
-      "structure": { "type": "flat" },
+      "structure": {
+        "type": "flat"
+      },
       "fields": [
         {
           "key": "command",
@@ -44,14 +46,25 @@
           "label": "Transport",
           "type": "dropdown",
           "default": "local",
-          "options": [["cloud", "cloud"], ["local", "local"]]
+          "options": [
+            [
+              "cloud",
+              "cloud"
+            ],
+            [
+              "local",
+              "local"
+            ]
+          ]
         },
         {
           "key": "device_id",
           "fieldId": "DEVICE_ID",
           "label": "Device ID",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "cloud" },
+          "visibleWhen": {
+            "TRANSPORT": "cloud"
+          },
           "placeholder": "Webex device ID"
         },
         {
@@ -59,7 +72,9 @@
           "fieldId": "TOKEN",
           "label": "Token",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "cloud" },
+          "visibleWhen": {
+            "TRANSPORT": "cloud"
+          },
           "placeholder": "{{ webex_token }}"
         },
         {
@@ -67,7 +82,9 @@
           "fieldId": "HOST",
           "label": "Host",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "{{ ansible_host }}"
         },
         {
@@ -75,7 +92,9 @@
           "fieldId": "USERNAME",
           "label": "Username",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "admin"
         },
         {
@@ -83,7 +102,9 @@
           "fieldId": "PASSWORD",
           "label": "Password",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "{{ device_password }}"
         },
         {
@@ -91,8 +112,9 @@
           "fieldId": "VALIDATE_CERTS",
           "label": "Validate Certs",
           "type": "boolean",
-          "default": false,
-          "advanced": true
+          "default": true,
+          "advanced": true,
+          "description": "Verify endpoint TLS certificates; disable only for a trusted local lab device."
         },
         {
           "key": "timeout",
@@ -110,7 +132,9 @@
       "label": "roomos_config",
       "tooltip": "Set xConfigurations with idempotency, check mode, and diff",
       "helpUrl": "https://github.com/voipnorm/ansible-collection-roomos",
-      "structure": { "type": "flat" },
+      "structure": {
+        "type": "flat"
+      },
       "fields": [
         {
           "key": "config",
@@ -129,7 +153,20 @@
           "label": "Failure Mode",
           "type": "dropdown",
           "default": "fail",
-          "options": [["fail", "fail"], ["warn", "warn"], ["ignore", "ignore"]],
+          "options": [
+            [
+              "fail",
+              "fail"
+            ],
+            [
+              "warn",
+              "warn"
+            ],
+            [
+              "ignore",
+              "ignore"
+            ]
+          ],
           "advanced": true,
           "description": "How to handle invalid config paths"
         },
@@ -139,14 +176,25 @@
           "label": "Transport",
           "type": "dropdown",
           "default": "local",
-          "options": [["cloud", "cloud"], ["local", "local"]]
+          "options": [
+            [
+              "cloud",
+              "cloud"
+            ],
+            [
+              "local",
+              "local"
+            ]
+          ]
         },
         {
           "key": "device_id",
           "fieldId": "DEVICE_ID",
           "label": "Device ID",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "cloud" },
+          "visibleWhen": {
+            "TRANSPORT": "cloud"
+          },
           "placeholder": "Webex device ID"
         },
         {
@@ -154,7 +202,9 @@
           "fieldId": "TOKEN",
           "label": "Token",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "cloud" },
+          "visibleWhen": {
+            "TRANSPORT": "cloud"
+          },
           "placeholder": "{{ webex_token }}"
         },
         {
@@ -162,7 +212,9 @@
           "fieldId": "HOST",
           "label": "Host",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "{{ ansible_host }}"
         },
         {
@@ -170,7 +222,9 @@
           "fieldId": "USERNAME",
           "label": "Username",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "admin"
         },
         {
@@ -178,7 +232,9 @@
           "fieldId": "PASSWORD",
           "label": "Password",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "{{ device_password }}"
         },
         {
@@ -186,8 +242,9 @@
           "fieldId": "VALIDATE_CERTS",
           "label": "Validate Certs",
           "type": "boolean",
-          "default": false,
-          "advanced": true
+          "default": true,
+          "advanced": true,
+          "description": "Verify endpoint TLS certificates; disable only for a trusted local lab device."
         },
         {
           "key": "timeout",
@@ -205,7 +262,9 @@
       "label": "roomos_status",
       "tooltip": "Query xStatus values for conditional playbook logic",
       "helpUrl": "https://github.com/voipnorm/ansible-collection-roomos",
-      "structure": { "type": "flat" },
+      "structure": {
+        "type": "flat"
+      },
       "fields": [
         {
           "key": "paths",
@@ -224,7 +283,20 @@
           "label": "On Missing",
           "type": "dropdown",
           "default": "warn",
-          "options": [["warn", "warn"], ["fail", "fail"], ["ignore", "ignore"]],
+          "options": [
+            [
+              "warn",
+              "warn"
+            ],
+            [
+              "fail",
+              "fail"
+            ],
+            [
+              "ignore",
+              "ignore"
+            ]
+          ],
           "description": "How to handle paths that don't exist"
         },
         {
@@ -233,14 +305,25 @@
           "label": "Transport",
           "type": "dropdown",
           "default": "local",
-          "options": [["cloud", "cloud"], ["local", "local"]]
+          "options": [
+            [
+              "cloud",
+              "cloud"
+            ],
+            [
+              "local",
+              "local"
+            ]
+          ]
         },
         {
           "key": "device_id",
           "fieldId": "DEVICE_ID",
           "label": "Device ID",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "cloud" },
+          "visibleWhen": {
+            "TRANSPORT": "cloud"
+          },
           "placeholder": "Webex device ID"
         },
         {
@@ -248,7 +331,9 @@
           "fieldId": "TOKEN",
           "label": "Token",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "cloud" },
+          "visibleWhen": {
+            "TRANSPORT": "cloud"
+          },
           "placeholder": "{{ webex_token }}"
         },
         {
@@ -256,7 +341,9 @@
           "fieldId": "HOST",
           "label": "Host",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "{{ ansible_host }}"
         },
         {
@@ -264,7 +351,9 @@
           "fieldId": "USERNAME",
           "label": "Username",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "admin"
         },
         {
@@ -272,7 +361,9 @@
           "fieldId": "PASSWORD",
           "label": "Password",
           "type": "text",
-          "visibleWhen": { "TRANSPORT": "local" },
+          "visibleWhen": {
+            "TRANSPORT": "local"
+          },
           "placeholder": "{{ device_password }}"
         },
         {
@@ -280,8 +371,9 @@
           "fieldId": "VALIDATE_CERTS",
           "label": "Validate Certs",
           "type": "boolean",
-          "default": false,
-          "advanced": true
+          "default": true,
+          "advanced": true,
+          "description": "Verify endpoint TLS certificates; disable only for a trusted local lab device."
         },
         {
           "key": "timeout",

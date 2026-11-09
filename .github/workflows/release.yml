@@ -1,7 +1,7 @@
 ---
 name: Release
 
-on:
+"on":
   push:
     tags:
       - "v*"
@@ -17,13 +17,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - run: pip install ansible-core>=2.15
+      - run: pip install "ansible-core>=2.15"
 
       - name: Build collection
         run: ansible-galaxy collection build --force
 
       - name: Publish to Galaxy
-        run: ansible-galaxy collection publish voipnorm-roomos-*.tar.gz --token ${{ secrets.GALAXY_TOKEN }}
+        env:
+          GALAXY_TOKEN: ${{ secrets.GALAXY_TOKEN }}
+        run: ansible-galaxy collection publish voipnorm-roomos-*.tar.gz --token "$GALAXY_TOKEN"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

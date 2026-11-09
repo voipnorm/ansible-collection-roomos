@@ -25,10 +25,13 @@ __metaclass__ = type
 import time
 import xml.etree.ElementTree as ET
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 
 from ansible.module_utils.urls import open_url
 
-from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common import RoomOSTransport
+from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common import (
+    RoomOSTransport, path_segments, read_response, validate_host, validate_path,
+)
 
 
 class LocalTransport(RoomOSTransport):
@@ -38,6 +41,7 @@ class LocalTransport(RoomOSTransport):
     RETRY_CODES = (429, 500, 502, 503, 504)
 
     def __init__(self, module, host, username, password):
+        validate_host(host)
         self.module = module
         self.host = host
         self.username = username
@@ -72,10 +76,14 @@ class LocalTransport(RoomOSTransport):
                     force_basic_auth=True,
                     validate_certs=self.validate_certs,
                     timeout=self.timeout,
+                    follow_redirects='none',
+                    unredirected_headers=['Authorization'],
+                    use_netrc=False,
                 )
-                return resp.read().decode('utf-8')
+                return read_response(resp).decode('utf-8')
             except HTTPError as e:
-                if e.code in self.RETRY_CODES and attempt < self.MAX_RETRIES:
+                if method == 'GET' and e.code in self.RETRY_CODES and attempt < self.MAX_RETRIES:
+                    e.close()
                     time.sleep(2 ** attempt)
                     last_exc = e
                     continue
@@ -83,8 +91,8 @@ class LocalTransport(RoomOSTransport):
                     raise Exception(
                         "Authentication failed for %s (HTTP 401). "
                         "Check username/password." % self.host)
-                raise Exception("Device error on %s (HTTP %d): %s" % (
-                    self.host, e.code, str(e)))
+                e.close()
+                raise Exception("Device error on %s (HTTP %d)" % (self.host, e.code))
             except URLError as e:
                 raise Exception("Cannot connect to %s: %s" % (
                     self.host, str(e.reason)))
@@ -105,6 +113,7 @@ class LocalTransport(RoomOSTransport):
           <Audio><Volume><Set command="True"><Level>50</Level></Set></Volume></Audio>
         </Command>
         """
+        validate_path(command_name, command=True)
         parts = command_name.split('.')
         root = ET.Element('Command')
         parent = root
@@ -115,6 +124,9 @@ class LocalTransport(RoomOSTransport):
                 elem.set('command', 'True')
                 if arguments:
                     for key, value in arguments.items():
+                        validate_path(key, command=True)
+                        if '.' in key:
+                            raise ValueError('Command argument names must be single identifiers')
                         arg_elem = ET.SubElement(elem, key)
                         arg_elem.text = str(value)
             parent = elem
@@ -132,18 +144,18 @@ class LocalTransport(RoomOSTransport):
         """
         root = ET.Element('Configuration')
         for path, value in config.items():
-            parts = path.split('.')
+            parts = path_segments(path)
             parent = root
             for i, part in enumerate(parts):
-                if i == len(parts) - 1:
-                    elem = ET.SubElement(parent, part)
-                    elem.text = str(value)
-                else:
-                    existing = parent.find(part)
-                    if existing is not None:
-                        parent = existing
-                    else:
-                        parent = ET.SubElement(parent, part)
+                if part.isdigit():
+                    continue
+                item = parts[i + 1] if i + 1 < len(parts) and parts[i + 1].isdigit() else None
+                existing = next((child for child in parent
+                                 if child.tag == part and child.get('item') == item), None)
+                if existing is None:
+                    existing = ET.SubElement(parent, part, {'item': item} if item else {})
+                parent = existing
+            parent.text = str(value)
         return ET.tostring(root, encoding='unicode')
 
     # -----------------------------------------------------------------------
@@ -161,7 +173,9 @@ class LocalTransport(RoomOSTransport):
           <USBC item="1"><Connected>False</Connected></USBC>
           → {'USBC.1.Connected': 'False'}
         """
-        root = ET.fromstring(xml_string)
+        root = LocalTransport._parse_xml(xml_string)
+        if root.tag not in ('Configuration', 'Status'):
+            raise ValueError('Unexpected xAPI response root')
         result = {}
         for child in root:
             tag = child.tag
@@ -175,8 +189,7 @@ class LocalTransport(RoomOSTransport):
         """Recursively walk XML and collect leaf text values."""
         children = list(element)
         if not children:
-            if element.text and element.text.strip():
-                result['.'.join(path_parts)] = element.text.strip()
+            result['.'.join(path_parts)] = element.text if element.text is not None else ''
         else:
             for child in children:
                 tag = child.tag
@@ -192,22 +205,20 @@ class LocalTransport(RoomOSTransport):
         Success: element with status="OK".
         Error: <ActionError><Reason>...</Reason></ActionError> or status="Error".
         """
-        root = ET.fromstring(xml_string)
+        root = LocalTransport._parse_xml(xml_string)
+        if root.tag != 'Command':
+            raise ValueError('Unexpected command response root')
 
         # Check for ActionError (e.g. "No action detected in document")
         error_elem = root.find('.//ActionError')
         if error_elem is not None:
-            reason = root.find('.//Reason')
-            msg = reason.text.strip() if reason is not None and reason.text else 'Unknown error'
-            raise Exception("xCommand '%s' failed: %s" % (command_name, msg))
+            raise Exception("xCommand '%s' failed: ActionError" % command_name)
 
         # Check for elements with status="Error"
         for elem in root.iter():
             status = elem.get('status')
             if status and status.lower() == 'error':
-                reason = elem.find('Reason')
-                msg = reason.text.strip() if reason is not None and reason.text else 'Unknown error'
-                raise Exception("xCommand '%s' failed: %s" % (command_name, msg))
+                raise Exception("xCommand '%s' failed: error status" % command_name)
 
         # Collect result elements (those with status attributes or text)
         result = {}
@@ -215,6 +226,12 @@ class LocalTransport(RoomOSTransport):
             status = elem.get('status')
             if status:
                 result[elem.tag] = {'status': status}
+                values = {}
+                for child in elem:
+                    LocalTransport._walk_xml(child, [child.tag], values)
+                result[elem.tag].update(values)
+        if not any(elem.get('status', '').lower() == 'ok' for elem in root.iter()):
+            raise ValueError('Command response does not confirm success')
         return result
 
     @staticmethod
@@ -223,21 +240,45 @@ class LocalTransport(RoomOSTransport):
 
         Success: <Configuration><Success/></Configuration>
         """
-        root = ET.fromstring(xml_string)
-
-        if root.find('.//Success') is not None:
-            return True
+        root = LocalTransport._parse_xml(xml_string)
+        if root.tag != 'Configuration':
+            raise ValueError('Unexpected configuration response root')
+        if any(elem.get('status', '').lower() == 'error' for elem in root.iter()):
+            raise ValueError('Configuration write returned error status')
 
         # Check for explicit error elements
         failure = root.find('.//Failure')
         if failure is None:
             failure = root.find('.//Error')
         if failure is not None:
-            reason = failure.find('.//Reason')
-            msg = reason.text.strip() if reason is not None and reason.text else 'Unknown error'
-            raise Exception("Configuration write failed: %s" % msg)
-
+            raise Exception('Configuration write failed: device rejected request')
+        if root.find('.//Success') is None:
+            raise ValueError('Configuration response does not confirm success')
         return True
+
+    @staticmethod
+    def _parse_xml(xml_string):
+        if '<!DOCTYPE' in xml_string.upper() or '<!ENTITY' in xml_string.upper():
+            raise ValueError('DTD and entity declarations are not allowed')
+        root = ET.fromstring(xml_string)
+        pending = [(root, 0)]
+        while pending:
+            node, depth = pending.pop()
+            if depth > 64:
+                raise ValueError('XML response is too deeply nested')
+            pending.extend((child, depth + 1) for child in node)
+        return root
+
+    @staticmethod
+    def _query_path(path):
+        parts = path_segments(path)
+        result = []
+        for part in parts:
+            if part.isdigit():
+                result[-1] += "[@item='%s']" % part
+            else:
+                result.append(part)
+        return quote('/'.join(result), safe='/')
 
     # -----------------------------------------------------------------------
     # Transport interface
@@ -255,11 +296,13 @@ class LocalTransport(RoomOSTransport):
         """GET /getxml?location=/Configuration/{path} for each path."""
         result = {}
         for path in paths:
-            url_segment = path.replace('.', '/')
+            url_segment = self._query_path(path)
             url_path = 'getxml?location=/Configuration/%s' % url_segment
             resp_body = self._request('GET', url_path)
             values = self._extract_leaf_values(resp_body)
-            result.update(values)
+            canonical = '.'.join(path_segments(path))
+            if canonical in values:
+                result[path] = values[canonical]
         return result
 
     def set_configuration(self, config):
@@ -275,9 +318,13 @@ class LocalTransport(RoomOSTransport):
         """GET /getxml?location=/Status/{path} for each path."""
         result = {}
         for path in paths:
-            url_segment = path.replace('.', '/')
+            url_segment = self._query_path(path)
             url_path = 'getxml?location=/Status/%s' % url_segment
             resp_body = self._request('GET', url_path)
             values = self._extract_leaf_values(resp_body)
-            result.update(values)
+            canonical = '.'.join(path_segments(path))
+            if canonical in values:
+                result[path] = values[canonical]
+            else:
+                result.update(values)
         return result

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.6 (unreleased)
+
+- Verify TLS by default, reject redirects, and protect secret-bearing Ansible arguments and errors.
+- Fix per-path configuration failure reporting, exact string comparisons, schema-driven cloud typing, indexed paths, and positive response validation.
+- Add inventory action plugins, making CE-Deploy inventory and documented fallback behavior work.
+- Bound responses/retry waits, close connections, and avoid replaying command POSTs.
+- Replace unsafe endpoint tooling with read-only smoke checks and explicit local write/restore tests.
+- Fix CI constraints and execution-environment metadata; synchronize the RoomOS pack at 1.1.1 / collection 0.1.6.
+
 ## 0.1.5 (2026-09-19)
 
 ### Security

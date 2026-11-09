@@ -77,13 +77,14 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common import (
     ROOMOS_COMMON_ARGS,
     get_transport,
+    validate_path,
 )
 
 
 def main():
     argument_spec = dict(
         command=dict(type='str', required=True),
-        arguments=dict(type='dict', default={}),
+        arguments=dict(type='dict', default={}, no_log=True),
     )
     argument_spec.update(ROOMOS_COMMON_ARGS)
 
@@ -94,6 +95,16 @@ def main():
 
     command = module.params['command']
     arguments = module.params['arguments']
+    try:
+        validate_path(command, command=True)
+        for key in arguments:
+            validate_path(key, command=True)
+            if '.' in key:
+                raise ValueError('Argument names must be single identifiers')
+        if module.params['timeout'] <= 0:
+            raise ValueError('Invalid timeout')
+    except ValueError:
+        module.fail_json(msg='Invalid command, argument name or timeout')
 
     if module.check_mode:
         module.exit_json(
@@ -102,12 +113,11 @@ def main():
             msg="Would execute xCommand: %s" % command,
         )
 
-    transport = get_transport(module)
-
     try:
+        transport = get_transport(module)
         result = transport.execute_command(command, arguments)
-    except Exception as e:
-        module.fail_json(msg="xCommand '%s' failed: %s" % (command, str(e)))
+    except Exception:
+        module.fail_json(msg="xCommand '%s' failed; inspect endpoint diagnostics" % command)
 
     module.exit_json(
         changed=True,

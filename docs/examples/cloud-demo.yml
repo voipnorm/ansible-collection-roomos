@@ -33,9 +33,9 @@
     - name: Display device info
       ansible.builtin.debug:
         msg: >-
-          Version: {{ status.values['SystemUnit.Software.Version'] }},
-          Uptime: {{ status.values['SystemUnit.Uptime'] }}s,
-          Standby: {{ status.values['Standby.State'] }}
+          Version: {{ status['values']['SystemUnit.Software.Version'] }},
+          Uptime: {{ status['values']['SystemUnit.Uptime'] }}s,
+          Standby: {{ status['values']['Standby.State'] }}
 
     - name: Configure NTP and timezone
       voipnorm.roomos.roomos_config:

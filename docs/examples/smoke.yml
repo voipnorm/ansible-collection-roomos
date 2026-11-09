@@ -1,0 +1,19 @@
+---
+- name: Read-only RoomOS endpoint smoke
+  hosts: all
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Read uptime and software version
+      voipnorm.roomos.roomos_status:
+        paths:
+          - SystemUnit.Uptime
+          - SystemUnit.Software.Version
+        on_missing: fail
+      register: roomos_smoke
+    - name: Verify status contract
+      ansible.builtin.assert:
+        that:
+          - not roomos_smoke.changed
+          - roomos_smoke['values']['SystemUnit.Uptime'] is not none
+          - roomos_smoke['values']['SystemUnit.Software.Version'] is not none

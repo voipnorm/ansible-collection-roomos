@@ -60,7 +60,7 @@ EXAMPLES = r'''
     transport: cloud
     device_id: "{{ device_id }}"
     token: "{{ webex_token }}"
-  when: device_status.values['Standby.State'] == 'Standby'
+  when: device_status['values']['Standby.State'] == 'Standby'
 '''
 
 RETURN = r'''
@@ -76,6 +76,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common import (
     ROOMOS_COMMON_ARGS,
     get_transport,
+    validate_path,
 )
 
 
@@ -94,12 +95,13 @@ def main():
     paths = module.params['paths']
     on_missing = module.params['on_missing']
 
-    transport = get_transport(module)
-
     try:
+        for path in paths:
+            validate_path(path)
+        transport = get_transport(module)
         raw_values = transport.get_status(paths)
-    except Exception as e:
-        module.fail_json(msg="Failed to query status: %s" % str(e))
+    except Exception:
+        module.fail_json(msg='Failed to query status; check paths and connection parameters')
 
     # Handle missing paths
     values = {}

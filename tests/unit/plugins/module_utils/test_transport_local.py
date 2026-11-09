@@ -168,7 +168,7 @@ class TestCheckCommandResponse:
             <Reason>No action detected in document</Reason>
           </ActionError>
         </Command>'''
-        with pytest.raises(Exception, match='No action detected'):
+        with pytest.raises(Exception, match='ActionError'):
             LocalTransport._check_command_response(xml, 'Bad.Command')
 
     def test_status_error(self):
@@ -178,7 +178,7 @@ class TestCheckCommandResponse:
             <Reason>Unknown command</Reason>
           </SomeResult>
         </Command>'''
-        with pytest.raises(Exception, match='Unknown command'):
+        with pytest.raises(Exception, match='error status'):
             LocalTransport._check_command_response(xml, 'Bad.Command')
 
 
@@ -200,7 +200,7 @@ class TestCheckConfigResponse:
             <Reason>Invalid path</Reason>
           </Failure>
         </Configuration>'''
-        with pytest.raises(Exception, match='Invalid path'):
+        with pytest.raises(Exception, match='device rejected'):
             LocalTransport._check_config_response(xml)
 
 

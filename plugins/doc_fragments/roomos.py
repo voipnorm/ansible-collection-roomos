@@ -52,10 +52,10 @@ options:
   validate_certs:
     description:
       - Whether to validate TLS certificates.
-      - Most RoomOS devices use self-signed certificates, so this defaults to C(false).
-      - Set to C(true) in production environments with proper CA-signed certificates.
+      - Certificate verification defaults to C(true) for both transports.
+      - Install your local CA in the controller trust store; use C(false) only for an explicit trusted lab opt-out.
     type: bool
-    default: false
+    default: true
   timeout:
     description:
       - HTTP request timeout in seconds.
@@ -66,8 +66,8 @@ notes:
   - Only RoomOS 11.x and 26.x are supported. CE 9.x is out of scope.
   - Modules resolve auth parameters via a fallback chain —
     explicit param > C(roomos_*) inventory var > standard Ansible var > environment var.
-  - For local transport, C(validate_certs=false) is the default because most RoomOS devices
-    use self-signed certificates. Review the security implications for your environment.
+  - Authenticated requests reject redirects. Configuration and command dictionaries are protected by C(no_log),
+    so matching values may also be masked in otherwise non-sensitive diffs.
 requirements:
   - No external Python dependencies — uses only C(ansible.module_utils.urls).
 '''

@@ -1,0 +1,12 @@
+---
+security_fixes:
+  - Verify TLS certificates by default for local and cloud transports; reject authenticated redirects.
+  - Protect configuration and command argument dictionaries before Ansible invocation logging, redact sensitive diffs and suppress endpoint error bodies.
+bugfixes:
+  - Resolve RoomOS inventory variables through action plugins, including CE-Deploy exported inventories.
+  - Report individual configuration read/write failures accurately and preserve exact string values.
+  - Coerce cloud numeric and boolean configuration values using returned API metadata instead of guessing from text.
+  - Support indexed configuration XML and cloud keys, reject invalid path and host syntax, require affirmative local write success.
+  - Bound responses and retry delays, close HTTP responses and avoid automatic command replay.
+  - Make endpoint smoke tests read-only and optional local write tests restore exact original state.
+  - Quote CI version constraints, remove a missing execution-environment dependency and synchronize the RoomOS pack.

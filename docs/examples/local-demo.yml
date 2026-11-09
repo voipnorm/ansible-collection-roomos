@@ -31,12 +31,12 @@
         host: "{{ device_host }}"
         username: "{{ device_user }}"
         password: "{{ device_pass }}"
-        validate_certs: false
+        validate_certs: true
       register: status
 
     - name: Display current status
       ansible.builtin.debug:
-        var: status.values
+        var: status['values']
 
     - name: Set default volume and SIP config
       voipnorm.roomos.roomos_config:
@@ -47,7 +47,7 @@
         host: "{{ device_host }}"
         username: "{{ device_user }}"
         password: "{{ device_pass }}"
-        validate_certs: false
+        validate_certs: true
 
     - name: Reboot device
       voipnorm.roomos.roomos_command:
@@ -58,4 +58,4 @@
         host: "{{ device_host }}"
         username: "{{ device_user }}"
         password: "{{ device_pass }}"
-        validate_certs: false
+        validate_certs: true

@@ -34,12 +34,8 @@ make clean         # Remove build artifacts
 For faster iteration, you can run unit tests directly with pytest. The collection must be installed or symlinked into the expected Ansible collection path:
 
 ```bash
-# Symlink for local development
-mkdir -p ~/.ansible/collections/ansible_collections/voipnorm
-ln -sf $(pwd) ~/.ansible/collections/ansible_collections/voipnorm/roomos
-
-# Run tests
-python -m pytest tests/unit/ -v
+# Unit tests create an isolated temporary collection namespace automatically.
+.venv/bin/python -m pytest tests/unit/ -v
 ```
 
 ## Architecture
@@ -63,3 +59,5 @@ See [docs/adr/](adr/) for architecture decision records:
 3. Merge to `main`
 4. Tag: `git tag v0.1.0 && git push --tags`
 5. Release workflow publishes to Galaxy automatically
+
+Real endpoint checks are opt-in; see [smoke testing](smoke-test.md).
