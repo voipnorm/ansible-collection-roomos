@@ -22,6 +22,7 @@ class AnsibleExitJson(Exception):
     def __init__(self, kwargs):
         self.kwargs = kwargs
 
+
 class AnsibleFailJson(Exception):
     def __init__(self, kwargs):
         self.kwargs = kwargs
@@ -31,8 +32,8 @@ def _run_module(module_cls, params, check_mode=False, diff=False):
     """Run an Ansible module with mocked exit_json/fail_json."""
     with mock.patch.multiple(
         'ansible.module_utils.basic.AnsibleModule',
-        exit_json=mock.MagicMock(side_effect=lambda **kw: (_ for _ in ()).throw(AnsibleExitJson(kw))),
-        fail_json=mock.MagicMock(side_effect=lambda **kw: (_ for _ in ()).throw(AnsibleFailJson(kw))),
+        exit_json=mock.MagicMock(side_effect=lambda **kw: (unused for unused in ()).throw(AnsibleExitJson(kw))),
+        fail_json=mock.MagicMock(side_effect=lambda **kw: (unused for unused in ()).throw(AnsibleFailJson(kw))),
     ):
         args = {'ANSIBLE_MODULE_ARGS': params}
         if check_mode:
@@ -41,8 +42,8 @@ def _run_module(module_cls, params, check_mode=False, diff=False):
             args['ANSIBLE_MODULE_ARGS']['_ansible_diff'] = True
 
         with mock.patch('ansible.module_utils.basic._ANSIBLE_ARGS',
-                       json.dumps(args).encode('utf-8')), \
-             mock.patch('ansible.module_utils.basic._ANSIBLE_PROFILE', 'legacy'):
+                        json.dumps(args).encode('utf-8')), \
+             mock.patch('ansible.module_utils.basic._ANSIBLE_PROFILE', 'legacy', create=True):
             with pytest.raises((AnsibleExitJson, AnsibleFailJson)) as exc_info:
                 module_cls.main()
             return exc_info
@@ -317,7 +318,9 @@ class TestConfigFailureModes:
         exc = _run_module(roomos_config, params)
         result = exc.value.kwargs
         assert isinstance(exc.value, AnsibleExitJson)
-        assert result['changed'] is True
+        assert result['changed'] is False
+        assert result['changed_keys'] == []
+        assert result['failed_keys'] == ['Audio.DefaultVolume']
 
     @mock.patch('ansible_collections.voipnorm.roomos.plugins.module_utils.transport_cloud.open_url')
     def test_failure_mode_ignore(self, mock_open_url):
@@ -340,4 +343,6 @@ class TestConfigFailureModes:
         exc = _run_module(roomos_config, params)
         result = exc.value.kwargs
         assert isinstance(exc.value, AnsibleExitJson)
-        assert result['changed'] is True
+        assert result['changed'] is False
+        assert result['changed_keys'] == []
+        assert result['failed_keys'] == ['Audio.DefaultVolume']

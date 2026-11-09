@@ -125,7 +125,7 @@ class TestCloudRetry:
     def test_no_retry_on_400(self, mock_open_url):
         mock_open_url.side_effect = _make_http_error(400, {'message': 'Bad request'})
         t = CloudTransport(_make_module())
-        with pytest.raises(Exception, match='Bad request'):
+        with pytest.raises(Exception, match='HTTP 400'):
             t.execute_command('Invalid.Command')
 
     @mock.patch('ansible_collections.voipnorm.roomos.plugins.module_utils.transport_cloud.open_url')

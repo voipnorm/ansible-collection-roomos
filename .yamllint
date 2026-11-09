@@ -13,3 +13,7 @@ rules:
   indentation:
     spaces: 2
     indent-sequences: true
+ignore: |
+  .venv/
+  .ansible/
+  build/

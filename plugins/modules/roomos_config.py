@@ -20,6 +20,8 @@ description:
   - Idempotent — reads current config, compares, and only applies changes.
   - Supports check mode (reports diff without applying) and diff mode.
   - Sensitive config paths are automatically redacted in diff output.
+  - Configuration values are protected from logging; matching ordinary diff values may also be masked.
+  - Paths are read before mutation and changed paths are written individually.
 options:
   config:
     description:
@@ -61,7 +63,7 @@ EXAMPLES = r'''
     host: "{{ ansible_host }}"
     username: admin
     password: "{{ device_password }}"
-    validate_certs: false
+    validate_certs: true
 
 # Warn on invalid paths instead of failing
 - name: Apply bulk config (warn on unsupported paths)
@@ -80,8 +82,8 @@ changed_keys:
   elements: str
   sample: ["NetworkServices.NTP.Server1.Address", "Time.Zone"]
 failed_keys:
-  description: List of config paths that failed to apply.
-  returned: when failure_mode is warn or ignore
+  description: List of config paths that failed to read or apply.
+  returned: always
   type: list
   elements: str
   sample: ["SomeInvalid.Path"]
@@ -99,13 +101,14 @@ from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common impo
     REDACTED_VALUE,
     get_transport,
     is_sensitive_path,
-    normalize_config_value,
+    config_values_equal,
+    validate_path,
 )
 
 
 def main():
     argument_spec = dict(
-        config=dict(type='dict', required=True),
+        config=dict(type='dict', required=True, no_log=True),
         failure_mode=dict(type='str', choices=['fail', 'warn', 'ignore'], default='fail'),
     )
     argument_spec.update(ROOMOS_COMMON_ARGS)
@@ -118,23 +121,49 @@ def main():
     desired_config = module.params['config']
     failure_mode = module.params['failure_mode']
 
-    transport = get_transport(module)
-
-    # Read current config
+    # Validate before any requests, including check mode.
     try:
-        current_values = transport.get_configuration(list(desired_config.keys()))
-    except Exception as e:
-        module.fail_json(msg="Failed to read current configuration: %s" % str(e))
+        for path, value in desired_config.items():
+            validate_path(path)
+            if value is None or isinstance(value, (dict, list)):
+                raise ValueError('Configuration values must be scalars')
+        transport = get_transport(module)
+    except Exception:
+        module.fail_json(msg='Invalid configuration or connection parameters')
+
+    current_values = {}
+    failed_keys = []
+    for path in desired_config:
+        try:
+            values = transport.get_configuration([path])
+            if path not in values:
+                raise ValueError('Configuration path is unavailable')
+            current_values[path] = values[path]
+            if is_sensitive_path(path) and values[path] is not None:
+                module.no_log_values.add(str(values[path]))
+        except Exception:
+            failed_keys.append(path)
+            if failure_mode == 'warn':
+                module.warn('Could not read configuration path: %s' % path)
+    if failed_keys and failure_mode == 'fail':
+        module.fail_json(msg='Could not read requested configuration paths',
+                         changed=False, changed_keys=[], failed_keys=failed_keys)
 
     # Compare with normalization
     changed_keys = []
     for path, desired_value in desired_config.items():
-        current = current_values.get(path, '')
-        if normalize_config_value(desired_value, path) != normalize_config_value(current, path):
+        if path in failed_keys:
+            continue
+        current = current_values[path]
+        try:
+            desired_value = transport.prepare_configuration_value(path, desired_value)
+        except (ValueError, TypeError, OverflowError):
+            module.fail_json(msg='Invalid configuration value for path: %s' % path)
+        if not config_values_equal(desired_value, current, path):
             changed_keys.append(path)
 
     if not changed_keys:
-        module.exit_json(changed=False, changed_keys=[], failed_keys=[])
+        module.exit_json(changed=False, changed_keys=[], failed_keys=failed_keys)
 
     # Build diff (redact sensitive paths)
     diff = None
@@ -151,24 +180,29 @@ def main():
         diff = {'before': before, 'after': after}
 
     if module.check_mode:
-        module.exit_json(changed=True, changed_keys=changed_keys, failed_keys=[], diff=diff)
+        module.exit_json(changed=True, changed_keys=changed_keys, failed_keys=failed_keys, diff=diff)
 
     # Apply changes
-    changes_to_apply = {k: desired_config[k] for k in changed_keys}
-    failed_keys = []
-
-    try:
-        transport.set_configuration(changes_to_apply)
-    except Exception as e:
-        if failure_mode == 'fail':
-            module.fail_json(msg="Failed to apply configuration: %s" % str(e))
-        elif failure_mode == 'warn':
-            module.warn("Some configuration paths failed: %s" % str(e))
-        # ignore: silently continue
+    applied_keys = []
+    for path in changed_keys:
+        try:
+            transport.set_configuration({path: desired_config[path]})
+            applied_keys.append(path)
+        except Exception:
+            failed_keys.append(path)
+            if failure_mode == 'fail':
+                module.fail_json(msg='Failed to apply configuration path: %s' % path,
+                                 changed=bool(applied_keys), changed_keys=applied_keys,
+                                 failed_keys=failed_keys)
+            if failure_mode == 'warn':
+                module.warn('Failed to apply configuration path: %s' % path)
+    if diff:
+        diff = {side: {key: value for key, value in data.items() if key in applied_keys}
+                for side, data in diff.items()}
 
     module.exit_json(
-        changed=True,
-        changed_keys=changed_keys,
+        changed=bool(applied_keys),
+        changed_keys=applied_keys,
         failed_keys=failed_keys,
         diff=diff,
     )

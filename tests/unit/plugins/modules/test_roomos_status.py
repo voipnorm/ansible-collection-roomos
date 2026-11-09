@@ -22,6 +22,7 @@ class AnsibleExitJson(Exception):
     def __init__(self, kwargs):
         self.kwargs = kwargs
 
+
 class AnsibleFailJson(Exception):
     def __init__(self, kwargs):
         self.kwargs = kwargs
@@ -31,16 +32,16 @@ def _run_module(module_cls, params, check_mode=False):
     """Run an Ansible module with mocked exit_json/fail_json."""
     with mock.patch.multiple(
         'ansible.module_utils.basic.AnsibleModule',
-        exit_json=mock.MagicMock(side_effect=lambda **kw: (_ for _ in ()).throw(AnsibleExitJson(kw))),
-        fail_json=mock.MagicMock(side_effect=lambda **kw: (_ for _ in ()).throw(AnsibleFailJson(kw))),
+        exit_json=mock.MagicMock(side_effect=lambda **kw: (unused for unused in ()).throw(AnsibleExitJson(kw))),
+        fail_json=mock.MagicMock(side_effect=lambda **kw: (unused for unused in ()).throw(AnsibleFailJson(kw))),
     ):
         args = {'ANSIBLE_MODULE_ARGS': params}
         if check_mode:
             args['ANSIBLE_MODULE_ARGS']['_ansible_check_mode'] = True
 
         with mock.patch('ansible.module_utils.basic._ANSIBLE_ARGS',
-                       json.dumps(args).encode('utf-8')), \
-             mock.patch('ansible.module_utils.basic._ANSIBLE_PROFILE', 'legacy'):
+                        json.dumps(args).encode('utf-8')), \
+             mock.patch('ansible.module_utils.basic._ANSIBLE_PROFILE', 'legacy', create=True):
             with pytest.raises((AnsibleExitJson, AnsibleFailJson)) as exc_info:
                 module_cls.main()
             return exc_info

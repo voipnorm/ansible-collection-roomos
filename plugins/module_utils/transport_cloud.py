@@ -20,10 +20,13 @@ __metaclass__ = type
 import json
 import time
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode, quote
 
 from ansible.module_utils.urls import open_url
 
-from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common import RoomOSTransport
+from ansible_collections.voipnorm.roomos.plugins.module_utils.roomos_common import (
+    RoomOSTransport, cloud_path, path_segments, read_response, validate_path,
+)
 
 
 class CloudTransport(RoomOSTransport):
@@ -39,6 +42,7 @@ class CloudTransport(RoomOSTransport):
         self.token = module.params['token']
         self.validate_certs = module.params['validate_certs']
         self.timeout = module.params['timeout']
+        self.config_types = {}
 
     # -----------------------------------------------------------------------
     # HTTP helper
@@ -65,30 +69,32 @@ class CloudTransport(RoomOSTransport):
                     headers=headers,
                     validate_certs=self.validate_certs,
                     timeout=self.timeout,
+                    follow_redirects='none',
+                    unredirected_headers=['Authorization'],
+                    use_netrc=False,
                 )
-                body = resp.read()
-                return json.loads(body) if body else {}
+                body = read_response(resp)
+                result = json.loads(body) if body else {}
+                if not isinstance(result, dict):
+                    raise ValueError('Unexpected Webex response type')
+                return result
             except HTTPError as e:
-                if e.code in self.RETRY_CODES and attempt < self.MAX_RETRIES:
+                if method != 'POST' and e.code in self.RETRY_CODES and attempt < self.MAX_RETRIES:
                     wait = 2 ** attempt
                     if e.code == 429:
                         retry_after = e.headers.get('Retry-After')
                         if retry_after:
                             try:
-                                wait = int(retry_after)
-                            except ValueError:
+                                wait = max(0, min(30, int(retry_after)))
+                            except (ValueError, TypeError):
                                 pass
+                    e.close()
                     time.sleep(wait)
                     last_exc = e
                     continue
-                # Parse error body for better messages
-                msg = str(e)
-                try:
-                    err_body = json.loads(e.read().decode('utf-8'))
-                    msg = err_body.get('message', msg)
-                except Exception:
-                    pass
-                raise Exception("Webex API error (HTTP %d): %s" % (e.code, msg))
+                e.close()
+                # Endpoint errors can echo transformed secrets; never relay bodies.
+                raise Exception('Webex API error (HTTP %d)' % e.code)
             except URLError as e:
                 raise Exception("Cannot connect to Webex API: %s" % str(e.reason))
 
@@ -99,41 +105,41 @@ class CloudTransport(RoomOSTransport):
     # -----------------------------------------------------------------------
 
     @staticmethod
-    def _coerce_value(value):
+    def _coerce_value(value, value_type=None):
         """Coerce string config values to native Python types.
 
         The Webex JSON Patch API requires native types (int 50, not string "50").
         Local transport uses XML where everything is a string, but cloud needs this.
         """
-        if not isinstance(value, str):
+        if not isinstance(value, str) or value_type not in ('integer', 'number', 'boolean'):
             return value
-        # Boolean
-        if value.lower() in ('true', 'on', 'yes'):
-            return True
-        if value.lower() in ('false', 'off', 'no'):
-            return False
-        # Integer
-        try:
+        if value_type == 'boolean':
+            if value.lower() in ('true', 'on', 'yes', '1'):
+                return True
+            if value.lower() in ('false', 'off', 'no', '0'):
+                return False
+            raise ValueError('Invalid boolean configuration value')
+        if value_type == 'integer':
             return int(value)
-        except ValueError:
-            pass
-        # Float
-        try:
-            return float(value)
-        except ValueError:
-            pass
-        return value
+        number = float(value)
+        import math
+        if not math.isfinite(number):
+            raise ValueError('Configuration numbers must be finite')
+        return number
 
     @staticmethod
-    def _flatten_dict(nested, result, prefix=''):
+    def _flatten_dict(nested, result, prefix='', depth=0):
         """Flatten nested dict to dot-notation keys.
 
         {'SystemUnit': {'Uptime': 61269}} → {'SystemUnit.Uptime': 61269}
         """
-        for key, value in nested.items():
+        if depth > 64:
+            raise ValueError('Webex response is too deeply nested')
+        entries = nested.items() if isinstance(nested, dict) else enumerate(nested, 1)
+        for key, value in entries:
             full_key = '%s.%s' % (prefix, key) if prefix else key
-            if isinstance(value, dict):
-                CloudTransport._flatten_dict(value, result, full_key)
+            if isinstance(value, (dict, list)):
+                CloudTransport._flatten_dict(value, result, full_key, depth + 1)
             else:
                 result[full_key] = value
 
@@ -141,16 +147,34 @@ class CloudTransport(RoomOSTransport):
     # Transport interface
     # -----------------------------------------------------------------------
 
+    def prepare_configuration_value(self, path, value):
+        return self._coerce_value(value, self.config_types.get(path))
+
     def execute_command(self, command_name, arguments=None):
         # type: (str, dict | None) -> dict
         """POST /v1/xapi/command/{commandKey}"""
-        url = '%s/xapi/command/%s' % (self.BASE_URL, command_name)
+        validate_path(command_name, command=True)
+        url = '%s/xapi/command/%s' % (self.BASE_URL, quote(command_name, safe='.'))
         body = json.dumps({
             'deviceId': self.device_id,
             'arguments': arguments or {},
         })
         data = self._request('POST', url, data=body)
-        return data.get('result', {})
+        if not isinstance(data.get('result'), dict):
+            raise ValueError('Webex command response does not contain a result')
+        result = data['result']
+        pending = [result]
+        while pending:
+            value = pending.pop()
+            if isinstance(value, dict):
+                if str(value.get('status', '')).lower() == 'error':
+                    raise ValueError('Webex command returned error status')
+                pending.extend(value.values())
+            elif isinstance(value, list):
+                pending.extend(value)
+        if data.get('errors'):
+            raise ValueError('Webex command returned error status')
+        return result
 
     def get_configuration(self, paths):
         # type: (list[str]) -> dict
@@ -160,11 +184,17 @@ class CloudTransport(RoomOSTransport):
         """
         result = {}
         for path in paths:
-            url = '%s/deviceConfigurations?deviceId=%s&key=%s' % (
-                self.BASE_URL, self.device_id, path)
+            key_path = cloud_path(path)
+            url = '%s/deviceConfigurations?%s' % (
+                self.BASE_URL, urlencode({'deviceId': self.device_id, 'key': key_path}))
             data = self._request('GET', url)
-            items = data.get('items', {})
+            items = data.get('items')
+            if not isinstance(items, dict):
+                raise ValueError('Webex configuration response does not contain items')
             for key, info in items.items():
+                if key != key_path:
+                    continue
+                self.config_types[path] = info.get('valueSpace', {}).get('type')
                 # Prefer sources.configured.value when explicitly set (updates
                 # synchronously after PATCH).  Fall back to appliedConfigurationValue
                 # for factory defaults where configured is null (ADR 0004 §4).
@@ -172,13 +202,14 @@ class CloudTransport(RoomOSTransport):
                 configured = sources.get('configured', {})
                 configured_val = configured.get('value') if configured else None
                 if configured_val is not None:
-                    result[key] = configured_val
+                    result[path] = configured_val
                 else:
                     applied = info.get('appliedConfigurationValue')
                     if applied and applied.get('value') is not None:
-                        result[key] = applied['value']
+                        result[path] = applied['value']
                     else:
-                        result[key] = info.get('value')
+                        if info.get('value') is not None:
+                            result[path] = info['value']
         return result
 
     def set_configuration(self, config):
@@ -187,13 +218,13 @@ class CloudTransport(RoomOSTransport):
 
         Uses JSON Patch format (RFC 6902) with application/json-patch+json.
         """
-        url = '%s/deviceConfigurations?deviceId=%s' % (self.BASE_URL, self.device_id)
+        url = '%s/deviceConfigurations?%s' % (self.BASE_URL, urlencode({'deviceId': self.device_id}))
         patch_ops = []
         for path, value in config.items():
             patch_ops.append({
                 'op': 'replace',
-                'path': '%s/sources/configured/value' % path,
-                'value': self._coerce_value(value),
+                'path': '%s/sources/configured/value' % cloud_path(path),
+                'value': self._coerce_value(value, self.config_types.get(path)),
             })
         body = json.dumps(patch_ops)
         self._request('PATCH', url, data=body,
@@ -209,10 +240,16 @@ class CloudTransport(RoomOSTransport):
         """
         result = {}
         for path in paths:
-            url = '%s/xapi/status?deviceId=%s&name=%s' % (
-                self.BASE_URL, self.device_id, path)
+            validate_path(path)
+            url = '%s/xapi/status?%s' % (
+                self.BASE_URL, urlencode({'deviceId': self.device_id, 'name': path}))
             data = self._request('GET', url)
-            nested = data.get('result', {})
+            nested = data.get('result')
+            if not isinstance(nested, dict):
+                raise ValueError('Webex status response does not contain a result')
             if nested:
                 self._flatten_dict(nested, result)
+                canonical = '.'.join(path_segments(path))
+                if canonical in result:
+                    result[path] = result[canonical]
         return result

@@ -36,3 +36,8 @@ coverage.xml
 
 # Ansible
 *.retry
+
+# Local validation state
+.ansible/
+.ruff_cache/
+tests/output/

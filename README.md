@@ -86,7 +86,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## Security
 
-- **`validate_certs`** defaults to `false` because most RoomOS devices use self-signed certificates. Set to `true` in environments with proper CA-signed certs.
+- **`validate_certs`** defaults to `true` for both transports. Trust your local CA on the controller. Explicit `false` is a lab-only opt-out. Requests reject redirects.
 - **Credentials**: Always use Ansible Vault or environment variables. Never hardcode tokens or passwords.
 - **Diff output**: Sensitive config paths (passwords, keys, SIP auth) are automatically redacted.
 
@@ -116,3 +116,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and PR guidelines.
 ## License
 
 GPL-3.0-or-later — see [LICENSE](LICENSE).
+
+See [endpoint smoke testing](docs/smoke-test.md) for read-only validation and opt-in local write/restore testing.
